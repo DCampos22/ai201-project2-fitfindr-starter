@@ -130,6 +130,28 @@ All data is stored in a session dict passed between tools:
 | suggest_outfit | Empty wardrobe | General styling advice for the item — pipeline continues |
 | create_fit_card | Empty outfit string | "couldn't generate a fit card — outfit data was incomplete." |
 
+**Example — no results path tested directly:**
+Query: `"designer ballgown size XXS under $5"`  `search_listings` returned `[]` — no listings matched all three constraints.  
+
+Agent returned: "I couldn't find any listings matching your search. Try broadening your description, adjusting your size, or raising your price limit."  
+
+`suggest_outfit` and `create_fit_card` were never called.
+
+## Spec Reflection
+
+**One way the spec helped during implementation:**
+The planning loop section of planning.md described the exact conditional branches
+before any code was written — "if results is empty, set error and return early."
+This made agent.py straightforward to implement because the logic was already decided.
+Without the spec, it would have been easy to call all three tools unconditionally and
+miss the early termination requirement entirely.
+
+**One way implementation diverged from the spec:**
+The spec described using the Groq API for query parsing (extracting description, size,
+and price from natural language). In practice, regex worked reliably for the patterns
+in this dataset and was much faster with no extra API call needed. The planning.md
+was updated to reflect this change.
+
 ## Running Tests
 
 ```bash
